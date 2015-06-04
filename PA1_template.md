@@ -1,31 +1,38 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: "K. Grace Kennedy"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+K. Grace Kennedy  
 
 
 ## Loading and preprocessing the data
 
 ###Variable description and initial data load
-```{r loadData}
+
+```r
 setwd("~/Dropbox/0Coursera_DataAnalysisR/5ReproducibleResearch/Projects/Project1ActivityMonitor/RepData_PeerAssessment1/Rcode")
 rawdata=read.csv("../activity.csv")
 head(rawdata)
 ```
 
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
 The variables included in the original dataset are:  
-**steps** (Class: `r class(rawdata[[1]])`): The number of steps in the time interval  
-**date** (Class `r class(rawdata[[2]])`):  Date of the observation  
-**interval** (Class: `r class(rawdata[[2]])`):  Start of 5-minute time interval from 0 (midnight) to 2355 (11:55PM)
+**steps** (Class: integer): The number of steps in the time interval  
+**date** (Class factor):  Date of the observation  
+**interval** (Class: factor):  Start of 5-minute time interval from 0 (midnight) to 2355 (11:55PM)
 
 ###Tagging observations with day fo the week and day type
 
 For future analysis, we want to be able to call observations by day of the week and by whether or not it is a weekday or weekend.  The last part of the following code (last `else` section) is checking that the assignment of weekday/weekend ran well.  It keeps track of any unassigned observations to be printed after the code chunk.
 
-```{r processData}
+
+```r
 dates=as.Date(rawdata[[2]])
 dayOfWk=as.factor(weekdays(dates))
 data=data.frame(rawdata,dayOfWk)
@@ -54,27 +61,37 @@ names(data)[5]="dayType"
 head(data)
 ```
 
-`r check`  The new variables are  
-**dayOfWk** (Class: `r class(data[[4]])`)  
-**dayType** (Class: `r class(data[[5]])`)  
+```
+##   steps       date interval dayOfWk dayType
+## 1    NA 2012-10-01        0  Monday weekday
+## 2    NA 2012-10-01        5  Monday weekday
+## 3    NA 2012-10-01       10  Monday weekday
+## 4    NA 2012-10-01       15  Monday weekday
+## 5    NA 2012-10-01       20  Monday weekday
+## 6    NA 2012-10-01       25  Monday weekday
+```
+
+All days were classified as weekday or weekend.  The new variables are  
+**dayOfWk** (Class: factor)  
+**dayType** (Class: character)  
 
 ## What is mean total number of steps taken per day?
 
 For this question we do not consider missing values.
 
-```{r noNA}
+
+```r
 steppingDays=data[!is.na(data$steps),]
 stepsByDay=aggregate(steppingDays$steps,by=list(Date=steppingDays$date),sum)
 ```
 
 Statistic     | Value         | Code   
 ------------- | ------------- | -------------  
-Mean  | `r mean(stepsByDay[[2]])`  | `mean(stepsByDay[[2]])`
-Median  | `r median(stepsByDay[[2]])`   | `median(stepsByDay[[2]])`
+Mean  | 1.0766189\times 10^{4}  | `mean(stepsByDay[[2]])`
+Median  | 10765   | `median(stepsByDay[[2]])`
 
-The mean and the median are so close relative to the range of steps in a day that we cannot distinguish them on the histogram below.  A barplot would show us the number of steps for each individual day rather than giving us a sense for the distribution for the total number of steps per day.
 
-```{r histSteps}
+```r
 par(mfrow=c(1, 1), mar=c(5, 4, 2, .8))
 hist(stepsByDay[[2]],
      main="Total Steps in a Day",
@@ -89,6 +106,8 @@ abline(
         col=c("red","blue")
 )
 ```
+
+![](PA1_template_files/figure-html/histSteps-1.png) 
 
 ## What is the average daily activity pattern?
 

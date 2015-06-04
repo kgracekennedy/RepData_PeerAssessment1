@@ -25,24 +25,33 @@ class(data[,2])
 summary(data$steps)
 summary(data$steps>-1)
 
-steppingDays=data[!is.na(data$steps>-1),]
+steppingDays=data[!is.na(data$steps),]
 head(steppingDays)
 stepsByDay=aggregate(steppingDays$steps,by=list(Date=steppingDays$date),sum)
 head(stepsByDay)
-hist(stepsByDay[[2]])
 mean(stepsByDay[[2]])
 median(stepsByDay[[2]])
-abline(
-  v=c(mean(stepsByDay[[2]]),median(stepsByDay[[2]])),
-  col=c("red","blue")
-)
-#Testing both lines are showing up
-abline(h=c(10,15),col=c("red","blue"))
 
+#########Hist
+par(mfrow=c(1, 1), mar=c(5, 4, 2, .8))
+hist(stepsByDay[[2]],
+     main="Total Steps in a Day",
+     xlab="Steps per Day",
+     ylab="Number of Days",
+     )
+legend("topright",
+       legend=c("Mean","Median"),
+       fill=c("red","blue"))
+abline(
+        v=c(mean(stepsByDay[[2]]),median(stepsByDay[[2]])),
+        col=c("red","blue")
+)
+
+#######Barplot
 barplot(stepsByDay[[2]])
 abline(
-  h=c(mean(stepsByDay[[2]]),median(stepsByDay[[2]])),
-  col=c("red","blue")
+        h=c(mean(stepsByDay[[2]]),median(stepsByDay[[2]])),
+        col=c("red","blue")
 )
 
 #There are some days where no data was recorded
@@ -102,11 +111,11 @@ class(newData$interval)
 head(newData)
 
 for (i in 1:length(newData[[1]])){
-  if (is.na(newData$steps[i])){
-    newData$steps[i]=
-      dataByDays[dataByDays$day==newData$V4[i] 
-                 & dataByDays$Group.2==newData$interval[i],3]
-  }
+        if (is.na(newData$steps[i])){
+                newData$steps[i]=
+                        dataByDays[dataByDays$day==newData$V4[i] 
+                                   & dataByDays$Group.2==newData$interval[i],3]
+        }
 }
 
 head(newData)
@@ -121,12 +130,12 @@ median(stepsByDay[[2]])
 mean(stepsByDayNEW[[2]])
 median(stepsByDayNEW[[2]])
 abline(
-  v=c(mean(stepsByDay[[2]]),median(stepsByDay[[2]])),
-  col=c("red","blue")
+        v=c(mean(stepsByDay[[2]]),median(stepsByDay[[2]])),
+        col=c("red","blue")
 )
 abline(
-  v=c(mean(stepsByDayNEW[[2]]),median(stepsByDayNEW[[2]])),
-  col=c("red","blue")
+        v=c(mean(stepsByDayNEW[[2]]),median(stepsByDayNEW[[2]])),
+        col=c("red","blue")
 )
 #########
 head(newData)
@@ -140,14 +149,14 @@ newData[,5]=character()
 k=0
 x=character()
 for (i in 1:length(newData[[1]])){
-  if (newData$V4[i] %in% weekdays){
-    newData[i,5]="weekday"
-  } else if (newData$V4[i] %in% weekend) {
-    newData[i,5]="weekend"
-  } else {
-    x[k]=newData[i,4]
-    k=k+1
-  }
+        if (newData$V4[i] %in% weekdays){
+                newData[i,5]="weekday"
+        } else if (newData$V4[i] %in% weekend) {
+                newData[i,5]="weekend"
+        } else {
+                x[k]=newData[i,4]
+                k=k+1
+        }
 }
 head(newData)
 summary(newData$V5)
@@ -159,7 +168,7 @@ names(newData)[4:5]=c("dayOfWeek","dayType")
 dayTypeAggr=aggregate(newData$steps,
                       by=list(dayType=newData$dayType,interval=newData$interval),
                       mean
-                      )
+)
 head(dayTypeAggr)
 par(mfrow=c(1,2))
 plot(dayTypeAggr[dayTypeAggr$dayType=="weekday",2:3])
