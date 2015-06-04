@@ -9,22 +9,16 @@ class(data[[3]])
 
 summary(data[[3]])
 
+########Figuring out the interval labels
 weird=data[data[[3]]==2355,]
 head(weird)
 dim(weird)
 288*2
-#interval is a time, so 2355 is 11:55 PM
+#interval is a start time, so 2355 is 11:55 PM
 
-hist(data[[3]])
-head(data)
-summary(data)
-class(data[,2])
 
-?as.date
 
-summary(data$steps)
-summary(data$steps>-1)
-
+############Look at the days with no NA's for mean, median, hist
 steppingDays=data[!is.na(data$steps),]
 head(steppingDays)
 stepsByDay=aggregate(steppingDays$steps,by=list(Date=steppingDays$date),sum)
@@ -47,12 +41,25 @@ abline(
         col=c("red","blue")
 )
 
-#######Barplot
-barplot(stepsByDay[[2]])
+################Barplot
+#check that the dates are chronological
+!is.unsorted(stepsByDay[[1]])
+barplot(stepsByDay[[2]],
+        main="Total Steps in Each Day",
+        xlab="Days Into Study (NA's skipped)",
+        ylab="Number of Steps",
+)
+legend("topleft",
+       horiz=TRUE, bty='n', cex=0.8,
+       legend=c("Mean","Median"),
+       fill=c("red","blue"))
 abline(
         h=c(mean(stepsByDay[[2]]),median(stepsByDay[[2]])),
         col=c("red","blue")
 )
+
+
+
 
 #There are some days where no data was recorded
 length(unique(stepsByDay[[1]]))

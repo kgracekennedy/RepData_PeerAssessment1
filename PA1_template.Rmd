@@ -26,8 +26,8 @@ The variables included in the original dataset are:
 For future analysis, we want to be able to call observations by day of the week and by whether or not it is a weekday or weekend.  The last part of the following code (last `else` section) is checking that the assignment of weekday/weekend ran well.  It keeps track of any unassigned observations to be printed after the code chunk.
 
 ```{r processData}
-dates=as.Date(rawdata[[2]])
-dayOfWk=as.factor(weekdays(dates))
+rawdata[[2]]=as.Date(rawdata[[2]])
+dayOfWk=as.factor(weekdays(rawdata[[2]]))
 data=data.frame(rawdata,dayOfWk)
 weekdays=c("Monday","Tuesday","Wednesday","Thursday","Friday")
 weekend=c("Saturday","Sunday")
@@ -55,6 +55,7 @@ head(data)
 ```
 
 `r check`  The new variables are  
+**date** (Updated to Class: `r class(data[[2]])`)  
 **dayOfWk** (Class: `r class(data[[4]])`)  
 **dayType** (Class: `r class(data[[5]])`)  
 
@@ -72,7 +73,7 @@ Statistic     | Value         | Code
 Mean  | `r mean(stepsByDay[[2]])`  | `mean(stepsByDay[[2]])`
 Median  | `r median(stepsByDay[[2]])`   | `median(stepsByDay[[2]])`
 
-The mean and the median are so close relative to the range of steps in a day that we cannot distinguish them on the histogram below.  A barplot would show us the number of steps for each individual day rather than giving us a sense for the distribution for the total number of steps per day.
+The mean and the median are so close relative to the range of steps in a day that we cannot distinguish them on the histogram below.  
 
 ```{r histSteps}
 par(mfrow=c(1, 1), mar=c(5, 4, 2, .8))
@@ -86,6 +87,29 @@ legend("topright",
        fill=c("red","blue"))
 abline(
         v=c(mean(stepsByDay[[2]]),median(stepsByDay[[2]])),
+        col=c("red","blue")
+)
+```
+
+A barplot would show us the number of steps for each individual day rather than giving us a sense for the distribution for the total number of steps per day.  The individual days are ordered rows, not necessarily chronologically.  So we need to check that the observations are actually in chronological order.
+
+```{r checkChron}
+!is.unsorted(stepsByDay[[1]])
+```
+
+```{r barplot}
+barplot(stepsByDay[[2]],
+     main="Total Steps in Each Day",
+     xlab="Days Into Study (NA's skipped)",
+     ylab="Number of Steps",
+)
+legend("topleft",
+       horiz=TRUE, bty='n', 
+       cex=0.8,
+       legend=c("Mean","Median"),
+       fill=c("red","blue"))
+abline(
+        h=c(mean(stepsByDay[[2]]),median(stepsByDay[[2]])),
         col=c("red","blue")
 )
 ```

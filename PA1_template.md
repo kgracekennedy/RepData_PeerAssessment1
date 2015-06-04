@@ -33,8 +33,8 @@ For future analysis, we want to be able to call observations by day of the week 
 
 
 ```r
-dates=as.Date(rawdata[[2]])
-dayOfWk=as.factor(weekdays(dates))
+rawdata[[2]]=as.Date(rawdata[[2]])
+dayOfWk=as.factor(weekdays(rawdata[[2]]))
 data=data.frame(rawdata,dayOfWk)
 weekdays=c("Monday","Tuesday","Wednesday","Thursday","Friday")
 weekend=c("Saturday","Sunday")
@@ -72,6 +72,7 @@ head(data)
 ```
 
 All days were classified as weekday or weekend.  The new variables are  
+**date** (Updated to Class: Date)  
 **dayOfWk** (Class: factor)  
 **dayType** (Class: character)  
 
@@ -89,6 +90,8 @@ Statistic     | Value         | Code
 ------------- | ------------- | -------------  
 Mean  | 1.0766189\times 10^{4}  | `mean(stepsByDay[[2]])`
 Median  | 10765   | `median(stepsByDay[[2]])`
+
+The mean and the median are so close relative to the range of steps in a day that we cannot distinguish them on the histogram below.  
 
 
 ```r
@@ -108,6 +111,37 @@ abline(
 ```
 
 ![](PA1_template_files/figure-html/histSteps-1.png) 
+
+A barplot would show us the number of steps for each individual day rather than giving us a sense for the distribution for the total number of steps per day.  The individual days are ordered rows, not necessarily chronologically.  So we need to check that the observations are actually in chronological order.
+
+
+```r
+!is.unsorted(stepsByDay[[1]])
+```
+
+```
+## [1] TRUE
+```
+
+
+```r
+barplot(stepsByDay[[2]],
+     main="Total Steps in Each Day",
+     xlab="Days Into Study (NA's skipped)",
+     ylab="Number of Steps",
+)
+legend("topleft",
+       horiz=TRUE, bty='n', 
+       cex=0.8,
+       legend=c("Mean","Median"),
+       fill=c("red","blue"))
+abline(
+        h=c(mean(stepsByDay[[2]]),median(stepsByDay[[2]])),
+        col=c("red","blue")
+)
+```
+
+![](PA1_template_files/figure-html/barplot-1.png) 
 
 ## What is the average daily activity pattern?
 
