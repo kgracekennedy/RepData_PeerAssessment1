@@ -156,3 +156,11 @@ newData[,5]=as.factor(newData[,5])
 head(newData)
 names(newData)[4:5]=c("dayOfWeek","dayType")
 
+dayTypeAggr=aggregate(newData$steps,
+                      by=list(dayType=newData$dayType,interval=newData$interval),
+                      mean
+                      )
+head(dayTypeAggr)
+par(mfrow=c(1,2))
+plot(dayTypeAggr[dayTypeAggr$dayType=="weekday",2:3])
+plot(dayTypeAggr[dayTypeAggr$dayType=="weekend",2:3])
