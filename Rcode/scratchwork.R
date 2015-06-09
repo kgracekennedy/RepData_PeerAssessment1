@@ -123,6 +123,8 @@ minor.tick(nx=5, tick.ratio=.5)
 ###### na analysis
 sum(is.na(data[[1]]))#gets number of True's
 length(is.na(data[[1]]))
+summary(data[[1]])
+head(data)
 
 #check days of the week
 naData=data[is.na(data[[1]]),]
@@ -133,11 +135,15 @@ summary(naData$dayType)/(24*60/5)
 #two friday and mondays are missing entirely
 #one thursday sunday and wednesday
 steppingDays=data[!is.na(data),]
-dataByDays=aggregate(steppingDays$steps,by=list(dayOfWk=steppingDays$dayOfWk,interval=steppingDays$interval),mean)
+dataByDays=aggregate(steppingDays$steps,
+                     by=list(dayOfWk=steppingDays$dayOfWk,
+                             interval=steppingDays$interval),
+                     mean)
 summary(dataByDays)
 
 newData=data
 head(newData)
+head(dataByDays)
 
 for (i in 1:length(newData[[1]])){
         if (is.na(newData$steps[i])){
@@ -162,32 +168,68 @@ hist(stepsByDay[[2]],
      main="NA's Removed",
      xlab="Steps per Day",
      ylab="Number of Days",
+     ylim=c(0,35)
 )
 hist(stepsByDayNEW[[2]],
      main="Interpolated NA Values",
      xlab="Steps per Day",
      ylab="Number of Days",
+     ylim=c(0,35)
 )
 title(main="Total Steps in a Day", outer=T)
 
 
 
 #########
-head(newData)
+#Weekend vs weekday
+dayTypeComp=aggregate(newData$steps,
+                      by=list(date=newData$date,
+                              dayType=newData$dayType
+                      ),
+                      sum)
+aggrDayType=aggregate(dayTypeComp$x,
+                      by=list(dayType=dayTypeComp$dayType),
+                      mean
+)
+names(aggrDayType)[2]="avgSteps"
+head(aggrDayType)
+(2*aggrDayType[2,2]+6*aggrDayType[1,2])/8
 
 
-head(newData)
-summary(newData$V5)
-summary(x)
-newData[,5]=as.factor(newData[,5])
-head(newData)
-names(newData)[4:5]=c("dayOfWeek","dayType")
 
 dayTypeAggr=aggregate(newData$steps,
                       by=list(dayType=newData$dayType,interval=newData$interval),
                       mean
 )
-head(dayTypeAggr)
-par(mfrow=c(1,2))
-plot(dayTypeAggr[dayTypeAggr$dayType=="weekday",2:3])
-plot(dayTypeAggr[dayTypeAggr$dayType=="weekend",2:3])
+
+
+par(mfrow=c(1,2),oma=c(0,0,2,0))
+plot(dayTypeAggr[dayTypeAggr$dayType=="weekday",2:3], 
+     type="l",
+     ylim=c(0,300),
+     ylab="Mean No. Steps in Time Interval",
+     xlab="Time Interval",
+     main="Weekday Patterns"
+     )
+plot(dayTypeAggr[dayTypeAggr$dayType=="weekend",2:3], 
+     type="l",
+     ylim=c(0,300),
+     ylab="Mean No. Steps in Time Interval",
+     xlab="Time Interval",
+     main="Weekend Patterns"
+     )
+title(main="Weekends vs. Weekdays",outer=T)
+
+#############
+#checking some things
+dataByDays=aggregate(steppingDays$steps,
+                     by=list(dayOfWk=steppingDays$dayOfWk,
+                             interval=steppingDays$interval),
+                     mean)
+names(dataByDays)[3]="steps"
+dataByDaysAGGR=aggregate(dataByDays$steps,
+                     by=list(dayOfWk=dataByDays$dayOfWk),
+                     sum)
+names(dataByDaysAGGR)[2]="avgSteps"
+dataByDaysAGGR[c(2,6,7,5,1,3,4),]
+summary(naData$dayOfWk)/(24*60/5)

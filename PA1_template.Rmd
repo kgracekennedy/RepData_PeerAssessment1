@@ -140,9 +140,10 @@ axis(side=1,
 minor.tick(nx=5, tick.ratio=.5)
 ```
 
+The time interval with the maximum number of average steps is `r dayPatterns[dayPatterns$steps==max(dayPatterns$steps),1]`, calculated with `dayPatterns[dayPatterns$steps==max(dayPatterns$steps),1]`.
 
 ## Inputing missing values
-I decided to fill in the missing values using the average of the days of the week that are present to avoid bias such as the individual running on certain days of the week or walking to work.  The number of each type of day that is missing is below:
+There are `r sum(is.na(data[[1]]))` missing data points.  I decided to fill in the missing values using the average of the days of the week that are present to avoid bias such as the individual running on certain days of the week or walking to work.  The number of each type of day that is missing is below:
 
 ```{r missingDays}
 naData=data[is.na(data[[1]]),]
@@ -174,11 +175,13 @@ hist(stepsByDay[[2]],
      main="NA's Removed",
      xlab="Steps per Day",
      ylab="Number of Days",
+     ylim=c(0,35)
 )
 hist(stepsByDayNEW[[2]],
      main="Extrapolated NA Values",
      xlab="Steps per Day",
      ylab="Number of Days",
+     ylim=c(0,35)
 )
 title(main="Total Steps in a Day", outer=T)
 ```
@@ -191,7 +194,63 @@ Median (NA's removed)  | `r median(stepsByDay[[2]])`   | `median(stepsByDay[[2]]
 Mean (NA's Extrapolated)  | `r round(mean(stepsByDayNEW[[2]]),digits=2)`  | `mean(stepsByDayNEW[[2]])`
 Median (NA's Extrapolated)  | `r median(stepsByDayNEW[[2]])`   | `median(stepsByDayNEW[[2]])`
 
+The mean and median are both higher for the dataset with the missing values filled in.  The reason for this is because many of the days with missing values are days that have a higher average step count (Wendesday, Friday, and weekends).
 
+```{r dailyAvg}
+dataByDays=aggregate(steppingDays$steps,
+                     by=list(dayOfWk=steppingDays$dayOfWk,
+                             interval=steppingDays$interval),
+                     mean)
+names(dataByDays)[3]="steps"
+dataByDaysAGGR=aggregate(dataByDays$steps,
+                     by=list(dayOfWk=dataByDays$dayOfWk),
+                     sum)
+names(dataByDaysAGGR)[2]="avgSteps"
+dataByDaysAGGR[c(2,6,7,5,1,3,4),]
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+We can see some pattern difference between the weekdays and the weekends.  On the weekdays, there appear to be certain times of the day with more activity.  Weekend activity seems to be more spread out.  
+
+```{r dayType}
+dayTypeAggr=aggregate(newData$steps,
+                      by=list(dayType=newData$dayType,interval=newData$interval),
+                      mean
+)
+
+par(mfrow=c(1,2),oma=c(0,0,2,0))
+plot(dayTypeAggr[dayTypeAggr$dayType=="weekday",2:3], 
+     type="l",
+     ylim=c(0,300),
+     ylab="Mean No. Steps in Time Interval",
+     xlab="Time Interval",
+     main="Weekday Patterns"
+     )
+plot(dayTypeAggr[dayTypeAggr$dayType=="weekend",2:3], 
+     type="l",
+     ylim=c(0,300),
+     ylab="Mean No. Steps in Time Interval",
+     xlab="Time Interval",
+     main="Weekend Patterns"
+     )
+title(main="Weekends vs. Weekdays",outer=T)
+```
+
+To compare weekend and weekday activity, we look at the average number of total steps for each of the day types, and see that the average number of steps on a weekend day is significantly higher than average, but is on par with Wednesday and Friday activity.  
+
+```{r compareWkdayWkend}
+dayTypeComp=aggregate(newData$steps,
+                      by=list(date=newData$date,
+                              dayType=newData$dayType
+                              ),
+                      sum)
+aggrDayType=aggregate(dayTypeComp$x,
+                      by=list(dayType=dayTypeComp$dayType),
+                      mean
+                      )
+names(aggrDayType)[2]="avgSteps"
+head(aggrDayType)
+dataByDaysAGGR[c(2,6,7,5,1,3,4),]
+```
