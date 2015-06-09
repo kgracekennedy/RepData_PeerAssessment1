@@ -300,23 +300,17 @@ dayTypeAggr=aggregate(newData$steps,
                       by=list(dayType=newData$dayType,interval=newData$interval),
                       mean
 )
-
-par(mfrow=c(1,2),oma=c(0,0,2,0))
-plot(dayTypeAggr[dayTypeAggr$dayType=="weekday",2:3], 
-     type="l",
-     ylim=c(0,300),
-     ylab="Mean No. Steps in Time Interval",
-     xlab="Time Interval",
-     main="Weekday Patterns"
-     )
-plot(dayTypeAggr[dayTypeAggr$dayType=="weekend",2:3], 
-     type="l",
-     ylim=c(0,300),
-     ylab="Mean No. Steps in Time Interval",
-     xlab="Time Interval",
-     main="Weekend Patterns"
-     )
-title(main="Weekends vs. Weekdays",outer=T)
+names(dayTypeAggr)[3]="avgSteps"
+library(lattice)
+xyplot(avgSteps~interval
+       |dayTypeAggr$dayType,
+       data=dayTypeAggr,
+       layout=c(2,1),
+       xlab="Time Interval",
+       ylab="Average Number of Steps",
+       main="Weekend vs. Weekday Activity",
+       type="l"
+       )
 ```
 
 ![](PA1_template_files/figure-html/dayType-1.png) 

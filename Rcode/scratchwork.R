@@ -202,6 +202,19 @@ dayTypeAggr=aggregate(newData$steps,
                       mean
 )
 
+names(dayTypeAggr)[3]="avgSteps"
+library(lattice)
+head(dayTypeAggr)
+xyplot(avgSteps~interval
+       |dayTypeAggr$dayType,
+       data=dayTypeAggr,
+       layout=c(2,1),
+       xlab="Time Interval",
+       ylab="Average Number of Steps",
+       main="Weekend vs. Weekday Activity",
+       type="l"
+       )
+?xyplot
 
 par(mfrow=c(1,2),oma=c(0,0,2,0))
 plot(dayTypeAggr[dayTypeAggr$dayType=="weekday",2:3], 
